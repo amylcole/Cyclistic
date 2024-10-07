@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -34,7 +34,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -129,7 +129,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Cyclistic Company Overview</strong></p>
 <p>Cyclistic is a fictional Chicago bike-share company. Launched in 2016, the program has grown to include a fleet of nearly 6,000 geotracked rental bicycles with a network of almost 700 networked stations. Rides can start or end at any station.</p>
 <p><strong>Marketing Focus</strong></p>
-<p>Since its inception, Cyclistic has relied on general awareness campaigns to build its user base, offering a flexible pass program of single-ride and full-day passes as well as an annual membership option. Riders who purchase the annual plan are “members”, while those purchasing a pass product are considered “casual” users . Comparative analysis of user data since 2016 has revealed that the member user segment is much more lucrative, inspiring the company to consider refocusing its marketing resources on increasing member users, especially by converting casual riders to members.</p>
+<p>Since its inception, Cyclistic has relied on general awareness campaigns to build its user base, offering a flexible pass program of single-ride and full-day passes as well as an annual membership option. Riders who purchase the annual plan are “members”, while those purchasing a pass product are considered “casual” users. Comparative analysis of user data since 2016 has revealed that the member user segment is much more lucrative, inspiring the company to consider refocusing its marketing resources on increasing member users, especially by converting casual riders to members.</p>
 <p><strong>Members vs.&nbsp;Casual Riders</strong></p>
 <p>To accomplish this goal, one top priority is discovering how these two segments of the rider population differ so that an effective marketing strategy can be devised to convert casual riders into members.</p>
 </section>
@@ -1130,33 +1130,37 @@ can override using the `.groups` argument.</code></pre>
 <span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the required libraries</span></span>
 <span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
-<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Read final_station_coords data from external file </span></span>
-<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a>final_station_coords <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">"../data/final_station_coords.xlsx"</span>)</span>
-<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge top_10_stations_overall with final_station_coords to get coordinates</span></span>
-<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(top_10_stations_overall, final_station_coords, <span class="at">by.x =</span> <span class="st">"station_name"</span>, <span class="at">by.y =</span> <span class="st">"street"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter out records with null values in member_casual</span></span>
-<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(member_casual))</span>
-<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Define color palette for member_casual groups</span></span>
-<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a>color_palette <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>)  <span class="co"># Add more colors if needed</span></span>
-<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a named vector with colors and labels</span></span>
-<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a>legend_data <span class="ot">&lt;-</span> <span class="fu">setNames</span>(color_palette, <span class="fu">unique</span>(merged_data<span class="sc">$</span>member_casual))</span>
-<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a leaflet map with different colored markers and legend</span></span>
-<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(merged_data) <span class="sc">%&gt;%</span></span>
-<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addTiles</span>(<span class="at">options =</span> <span class="fu">tileOptions</span>(<span class="at">noWrap =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addCircleMarkers</span>(<span class="at">lng =</span> <span class="sc">~</span>long, <span class="at">lat =</span> <span class="sc">~</span>lat, <span class="at">color =</span> <span class="sc">~</span><span class="fu">factor</span>(member_casual), <span class="at">radius =</span> <span class="dv">5</span>, <span class="at">fillColor =</span> <span class="sc">~</span>color_palette[<span class="fu">as.numeric</span>(<span class="fu">factor</span>(member_casual))], <span class="at">fillOpacity =</span> <span class="fl">0.8</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb121-26"><a href="#cb121-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLegend</span>(<span class="at">position =</span> <span class="st">"bottomright"</span>, <span class="at">colors =</span> color_palette, <span class="at">labels =</span> <span class="fu">names</span>(legend_data))</span>
-<span id="cb121-27"><a href="#cb121-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-28"><a href="#cb121-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the map</span></span>
-<span id="cb121-29"><a href="#cb121-29" aria-hidden="true" tabindex="-1"></a>map</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Read final_station_coords data from external file </span></span>
+<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a>final_station_coords <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">"../data/final_station_coords.xlsx"</span>)</span>
+<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge top_10_stations_overall with final_station_coords to get coordinates</span></span>
+<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(top_10_stations_overall, final_station_coords, <span class="at">by.x =</span> <span class="st">"station_name"</span>, <span class="at">by.y =</span> <span class="st">"street"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter out records with null values in member_casual</span></span>
+<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(member_casual))</span>
+<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Define color palette for member_casual groups</span></span>
+<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a>color_palette <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>) <span class="co"># Add more colors if needed</span></span>
+<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a named vector with colors and labels</span></span>
+<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a>legend_data <span class="ot">&lt;-</span> <span class="fu">setNames</span>(color_palette, <span class="fu">unique</span>(merged_data<span class="sc">$</span>member_casual))</span>
+<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a leaflet map with different colored markers and legend</span></span>
+<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(merged_data) <span class="sc">%&gt;%</span></span>
+<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addTiles</span>(<span class="at">options =</span> <span class="fu">tileOptions</span>(<span class="at">noWrap =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb121-26"><a href="#cb121-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addCircleMarkers</span>(<span class="at">lng =</span> <span class="sc">~</span>long, <span class="at">lat =</span> <span class="sc">~</span>lat, <span class="at">color =</span> <span class="sc">~</span><span class="fu">factor</span>(member_casual), <span class="at">radius =</span> <span class="dv">5</span>, <span class="at">fillColor =</span> <span class="sc">~</span>color_palette[<span class="fu">as.numeric</span>(<span class="fu">factor</span>(member_casual))], <span class="at">fillOpacity =</span> <span class="fl">0.8</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb121-27"><a href="#cb121-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLegend</span>(<span class="at">position =</span> <span class="st">"bottomright"</span>, <span class="at">colors =</span> color_palette, <span class="at">labels =</span> <span class="fu">names</span>(legend_data))</span>
+<span id="cb121-28"><a href="#cb121-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-29"><a href="#cb121-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the leaflet map as an HTML widget</span></span>
+<span id="cb121-30"><a href="#cb121-30" aria-hidden="true" tabindex="-1"></a><span class="fu">saveWidget</span>(map, <span class="at">file =</span> <span class="st">"leaflet_map.html"</span>, <span class="at">selfcontained =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb121-31"><a href="#cb121-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-32"><a href="#cb121-32" aria-hidden="true" tabindex="-1"></a><span class="co">#Display the map</span></span>
+<span id="cb121-33"><a href="#cb121-33" aria-hidden="true" tabindex="-1"></a>map</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="leaflet html-widget html-fill-item" id="htmlwidget-c546472b917589beaa74" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-c546472b917589beaa74">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":true,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addCircleMarkers","args":[[41.86636555,41.937904137,41.903137142,41.878027147,41.881861146,41.883175146,41.8857162,41.880916145,41.911147141,41.867398148,41.889124145,41.900815142,41.8825754,41.86763465,41.896675143,41.892121143,41.9262421,41.79142916,41.912198,41.902885142],[-87.606625857,-87.64432974,-87.631423747,-87.641071747,-87.641193246,-87.641233746,-87.611463958,-87.617487254,-87.626428748,-87.622441753,-87.638097247,-87.62422375,-87.62253608100001,-87.613685369,-87.628197249,-87.61007125499999,-87.6309574,-87.598074268,-87.634669,-87.634443246],5,null,null,{"interactive":true,"className":"","stroke":true,"color":["casual","member","member","member","member","member","casual","casual","casual","casual","member","casual","casual","casual","member","casual","casual","member","member","member"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["blue","red","red","red","red","red","blue","blue","blue","blue","red","blue","blue","blue","red","blue","blue","red","red","red"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["blue","red"],"labels":["casual","member"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"bottomright","type":"unknown","title":null,"extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[41.79142916,41.937904137],"lng":[-87.64432974,-87.598074268]}},"evals":[],"jsHooks":[]}</script>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-4697cde890870e36dccb" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-4697cde890870e36dccb">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":true,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addCircleMarkers","args":[[41.86636555,41.937904137,41.903137142,41.878027147,41.881861146,41.883175146,41.8857162,41.880916145,41.911147141,41.867398148,41.889124145,41.900815142,41.8825754,41.86763465,41.896675143,41.892121143,41.9262421,41.79142916,41.912198,41.902885142],[-87.606625857,-87.64432974,-87.631423747,-87.641071747,-87.641193246,-87.641233746,-87.611463958,-87.617487254,-87.626428748,-87.622441753,-87.638097247,-87.62422375,-87.62253608100001,-87.613685369,-87.628197249,-87.61007125499999,-87.6309574,-87.598074268,-87.634669,-87.634443246],5,null,null,{"interactive":true,"className":"","stroke":true,"color":["casual","member","member","member","member","member","casual","casual","casual","casual","member","casual","casual","casual","member","casual","casual","member","member","member"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["blue","red","red","red","red","red","blue","blue","blue","blue","red","blue","blue","blue","red","blue","blue","red","red","red"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["blue","red"],"labels":["casual","member"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"bottomright","type":"unknown","title":null,"extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[41.79142916,41.937904137],"lng":[-87.64432974,-87.598074268]}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>The locations of the top 10 destinations for each rider type were evaluated in Google Maps for key amenities and other features that would be likely to attract visits. Each of the top 10 casual rider stations is located at a major tourist attraction along the waterfront, while member riders’ top 10 destinations are transit stations, residential and employment centers, schools, and restaurant areas. This underscores the observation that many casual riders in the current system are visitors to the city, not residents, an observation further supported by the other differences noted between these groups: casual riders use the system more on weekends, take more round trips and longer rides overall than members. To convert more casual riders to member riders, my recommendation for Cyclistic is to focus on that subset of casual riders who live in Chicago and who would be inclined to benefit from convenient bike locations: students and people commuting between home and work or school, and who may be inclined to commute or run errands by bike. Marketing campaigns could emphasize the convenience of having stations located near universities, housing areas, and major employers, perhaps offering discounted memberships through employer or university partnerships; and special offers for those who have purchased a single day pass to convert to a membership. In this dataset, there are already more member riders than there are casual riders to convert, so for optimal future growth I would also advise continuing to target marketing to new customers, focusing on the benefits of membership.</p>
@@ -1201,18 +1205,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1244,7 +1237,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -1252,7 +1267,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
